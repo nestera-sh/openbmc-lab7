@@ -11,7 +11,7 @@ if [ ! -f "$IMAGE_PATH" ]; then
     exit 1
 fi
 
-а
+
 nohup qemu-system-arm -m 256 -M romulus-bmc -nographic \
 -drive file=${IMAGE_PATH},format=raw,if=mtd,snapshot=on \
 -net nic -net user,hostfwd=udp:0.0.0.0:2623-:623,hostfwd=tcp:0.0.0.0:2222-:22,hostfwd=tcp:0.0.0.0:2443-:443,hostname=qemu \
