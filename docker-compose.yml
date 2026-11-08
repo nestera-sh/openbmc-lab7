@@ -8,7 +8,7 @@ services:
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
-      - /home/shovely/obmc-phosphor-image-romulus.static.mtd:/images/obmc-phosphor-image-romulus.static.mtd:ro
+      - /home/shovely/obmc-phosphor-image-romulus.static.mtd:/images/obmc-phosphor-image-romulus.static.mtd
 
 volumes:
   jenkins_home:
