@@ -3,21 +3,24 @@ pipeline {
 
     options {
         timestamps()
-        disableConcurrentBuilds() 
+        disableConcurrentBuilds()
         buildDiscarder(logRotator(numToKeepStr: '10'))
     }
 
     stages {
         stage('Prepare') {
             steps {
-                cleanWs()
+
+                sh 'rm -rf reports'
+                sh 'mkdir -p reports'
+
                 sh 'chmod +x scripts/*.sh'
             }
         }
 
         stage('Launch QEMU') {
             steps {
-                sh './scripts/start_qemu.sh'
+                sh 'bash ./scripts/start_qemu.sh'
             }
             post {
                 always {
@@ -28,7 +31,7 @@ pipeline {
 
         stage('OpenBMC automated tests (API)') {
             steps {
-                sh './scripts/run_api_tests.sh'
+                sh 'bash ./scripts/run_api_tests.sh'
             }
             post {
                 always {
@@ -40,7 +43,7 @@ pipeline {
 
         stage('OpenBMC WebUI tests') {
             steps {
-                sh './scripts/run_webui_tests.sh'
+                sh 'bash ./scripts/run_webui_tests.sh'
             }
             post {
                 always {
@@ -52,7 +55,7 @@ pipeline {
 
         stage('OpenBMC load tests') {
             steps {
-                sh './scripts/run_load_tests.sh'
+                sh 'bash ./scripts/run_load_tests.sh'
             }
             post {
                 always {
