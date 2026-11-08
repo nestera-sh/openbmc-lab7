@@ -4,7 +4,7 @@ set -e
 echo "Starting OpenBMC QEMU"
 mkdir -p reports/qemu
 
-IMAGE_PATH="/home/shovely/obmc/obmc-phosphor-image-romulus.static.mtd"
+IMAGE_PATH="/images/obmc-phosphor-image-romulus.static.mtd"
 
 if [ ! -f "$IMAGE_PATH" ]; then
     echo "ERROR: Image file not found at $IMAGE_PATH"

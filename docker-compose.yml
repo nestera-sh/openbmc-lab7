@@ -8,7 +8,7 @@ services:
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
-      - /home/shovely:/home/shovely:ro
+      - /home/shovely/obmc:/images:ro
 
 volumes:
   jenkins_home:
