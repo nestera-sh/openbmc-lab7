@@ -1,6 +1,6 @@
 services:
   jenkins:
-    image: jenkins/jenkins:lts
+    build: .
     container_name: lab7-jenkins
     restart: unless-stopped
     ports:
@@ -8,6 +8,7 @@ services:
       - "50000:50000"
     volumes:
       - jenkins_home:/var/jenkins_home
+      - /home/shovely:/home/shovely:ro
 
 volumes:
   jenkins_home:

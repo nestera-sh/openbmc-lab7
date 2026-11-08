@@ -3,47 +3,60 @@ pipeline {
 
     options {
         timestamps()
+        disableConcurrentBuilds() 
+        buildDiscarder(logRotator(numToKeepStr: '10'))
     }
 
     stages {
-        stage('Launch QEMU') {
+        stage('Prepare') {
             steps {
-                echo 'Launching OpenBMC QEMU...'
+                cleanWs()
+                sh 'chmod +x scripts/*.sh'
             }
         }
 
-        stage('OpenBMC automated tests') {
+        stage('Launch QEMU') {
             steps {
-                echo 'Running OpenBMC automated tests...'
+                sh './scripts/start_qemu.sh'
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'reports/api/**/*',
-                                     allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'reports/qemu/**/*', allowEmptyArchive: true
+                }
+            }
+        }
+
+        stage('OpenBMC automated tests (API)') {
+            steps {
+                sh './scripts/run_api_tests.sh'
+            }
+            post {
+                always {
+                    junit testResults: 'reports/api/junit.xml', allowEmptyResults: true
+                    archiveArtifacts artifacts: 'reports/api/**/*', allowEmptyArchive: true
                 }
             }
         }
 
         stage('OpenBMC WebUI tests') {
             steps {
-                echo 'Running OpenBMC WebUI tests...'
+                sh './scripts/run_webui_tests.sh'
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'reports/webui/**/*',
-                                     allowEmptyArchive: true
+                    junit testResults: 'reports/webui/junit.xml', allowEmptyResults: true
+                    archiveArtifacts artifacts: 'reports/webui/**/*', allowEmptyArchive: true
                 }
             }
         }
 
         stage('OpenBMC load tests') {
             steps {
-                echo 'Running OpenBMC load tests...'
+                sh './scripts/run_load_tests.sh'
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'reports/load/**/*',
-                                     allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'reports/load/**/*', allowEmptyArchive: true
                 }
             }
         }
@@ -51,8 +64,16 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'reports/**/*',
-                             allowEmptyArchive: true
+            sh '''
+                if [ -f reports/qemu/qemu.pid ]; then
+                    kill $(cat reports/qemu/qemu.pid) 2>/dev/null || true
+                    rm -f reports/qemu/qemu.pid
+                fi
+            '''
+            archiveArtifacts artifacts: 'reports/**/*', allowEmptyArchive: true
+        }
+        cleanup {
+            cleanWs()
         }
     }
 }
